@@ -1,28 +1,67 @@
+"""
+Attempts to "prettify" standard source code form ez-configurator web app
+(https://configure.ergodox-ez.com/)
 
-LAYOUT_FORMATS = {
+"""
+from __future__ import print_function
 
+
+COMMENT_LAYOUT_FORMATS = {
     "EXTRA_WIDE":
+
     """
+$LAYER_NAME
 
 .--------------------------------------------------------------. .--------------------------------------------------------------.
-| KEY_00 | KEY_01 | KEY_02 | KEY_03 | KEY_04 | KEY_05 | KEY_06 | | KEY_38 | KEY_39 | KEY_40 | KEY_41 | KEY_42 | KEY_43 | KEY_44 |
+|$KEY_00 |$KEY_01 |$KEY_02 |$KEY_03 |$KEY_04 |$KEY_05 |$KEY_06 | |$KEY_38 |$KEY_39 |$KEY_40 |$KEY_41 |$KEY_42 |$KEY_43 |$KEY_44 |
 !--------+--------+--------+--------+--------+-----------------! !--------+--------+--------+--------+--------+-----------------!
-| KEY_07 | KEY_08 | KEY_09 | KEY_10 | KEY_11 | KEY_12 | KEY_13 | ! KEY_45 | KEY_46 | KEY_47 | KEY_48 | KEY_49 | KEY_50 | KEY_51 |
+|$KEY_07 |$KEY_08 |$KEY_09 |$KEY_10 |$KEY_11 |$KEY_12 |$KEY_13 | !$KEY_45 |$KEY_46 |$KEY_47 |$KEY_48 |$KEY_49 |$KEY_50 |$KEY_51 |
 !--------+--------+--------+--------x--------x--------!        ! !        !--------x--------x--------+--------+--------+--------!
-| KEY_14 | KEY_15 | KEY_16 | KEY_17 | KEY_18 | KEY_19 |--------! !--------! KEY_52 | KEY_53 | KEY_54 | KEY_55 | KEY_56 | KEY_57 |
-!--------+--------+--------+--------x--------x--------! KEY_26 ! ! KEY_58 !--------x--------x--------+--------+--------+--------!
-| KEY_20 | KEY_21 | KEY_22 | KEY_23 | KEY_24 | KEY_25 |        | !        | KEY_59 | KEY_60 | KEY_61 | KEY_62 | KEY_63 | KEY_64 |
+|$KEY_14 |$KEY_15 |$KEY_16 |$KEY_17 |$KEY_18 |$KEY_19 |--------! !--------!$KEY_52 |$KEY_53 |$KEY_54 |$KEY_55 |$KEY_56 |$KEY_57 |
+!--------+--------+--------+--------x--------x--------!$KEY_26 ! !$KEY_58 !--------x--------x--------+--------+--------+--------!
+|$KEY_20 |$KEY_21 |$KEY_22 |$KEY_23 |$KEY_24 |$KEY_25 |        | !        |$KEY_59 |$KEY_60 |$KEY_61 |$KEY_62 |$KEY_63 |$KEY_64 |
 '--------+--------+--------+--------+--------+-----------------' '-----------------+--------+--------+--------+--------+--------'
- | KEY_27| KEY_28 | KEY_29 | KEY_30 | KEY_31 |                                     ! KEY_65 | KEY_66 | KEY_67 | KEY_68 | KEY_69|
+ |$KEY_27|$KEY_28 |$KEY_29 |$KEY_30 |$KEY_31 |                                     !$KEY_65 |$KEY_66 |$KEY_67 |$KEY_68 |$KEY_69|
  '-------------------------------------------'                                     '-------------------------------------------'
                                              .-----------------. .-----------------.
-                                             | KEY_32 | KEY_33 | ! KEY_70 | KEY_71 |
+                                             |$KEY_32 |$KEY_33 | !$KEY_70 |$KEY_71 |
                                     .--------+--------+--------! !--------+--------+--------.
-                                    !        !        | KEY_34 | ! KEY_72 |        !        !
-                                    ! KEY_35 ! KEY_36 !--------! !--------! KEY_74 ! KEY_75 !
-                                    |        |        | KEY_37 | ! KEY_73 |        |        |
+                                    !        !        |$KEY_34 | !$KEY_72 |        !        !
+                                    !$KEY_35 !$KEY_36 !--------! !--------!$KEY_74 !$KEY_75 !
+                                    |        |        |$KEY_37 | !$KEY_73 |        |        |
                                     '--------------------------' '--------------------------'
     """,
+}
+
+
+SOURCE_LAYOUT_FORMATS = {
+    "EXTRA_WIDE":
+
+    """
+[$LAYER_NAME] = LAYOUT_ergodox(
+      // left hand
+      $KEY_00      $KEY_01      $KEY_02      $KEY_03      $KEY_04      $KEY_05      $KEY_06
+      $KEY_07      $KEY_08      $KEY_09      $KEY_10      $KEY_11      $KEY_12      $KEY_13
+      $KEY_14      $KEY_15      $KEY_16      $KEY_17      $KEY_18      $KEY_19
+      $KEY_20      $KEY_21      $KEY_22      $KEY_23      $KEY_24      $KEY_25      $KEY_26      
+      $KEY_27      $KEY_28      $KEY_29      $KEY_30      $KEY_31
+      
+                                                                       $KEY_32      $KEY_33
+                                                                                    $KEY_34
+                                                          $KEY_35      $KEY_36      $KEY_37
+
+      // right hand
+      $KEY_38      $KEY_39      $KEY_40      $KEY_41      $KEY_42      $KEY_43      $KEY_44
+      $KEY_45      $KEY_46      $KEY_47      $KEY_48      $KEY_49      $KEY_50      $KEY_51
+                   $KEY_52      $KEY_53      $KEY_54      $KEY_55      $KEY_56      $KEY_57
+      $KEY_58      $KEY_59      $KEY_60      $KEY_61      $KEY_62      $KEY_63      $KEY_64      
+                                $KEY_65      $KEY_66      $KEY_67      $KEY_68      $KEY_69
+      
+      $KEY_70      $KEY_71
+      $KEY_72
+      $KEY_73      $KEY_74      $KEY_75
+)
+    """
 }
 
 
@@ -248,21 +287,80 @@ def _split_key_definitions(line):
     yield token.strip()
 
 
-def fill_format(fmt, keymap):
+def fill_comment_template(template, layer_name, layer_definition,
+                          truncate=True, verbose=False):
     """
     Replace placeholders in format string with appropriate key names
 
-    :param fmt: str
-    :param keymap: dict
+    :param template: str
+        template for comment "picture" of layer
+
+    :param layer_name: str
+        name for this layer
+
+    :param layer_definition: dict
+        mapping of key number of key value
+
+    :param truncate: bool
+        truncate key values if they are longer than placeholders
+
+    :param verbose: bool
+
     :return: str
+        template with appropriate values filled in for place holders
 
     """
 
-    for key_number, key_value in keymap.items():
-        place_holder = "KEY_{:02.0f}".format(key_number)
-        value = key_value.replace("KC_", "").center(len(place_holder))
-        value = value[:len(place_holder)]
+    template = template.replace("$LAYER_NAME", layer_name)
 
-        fmt = fmt.replace(place_holder, value)
+    for key_number, key_value in layer_definition.items():
+        place_holder = "$KEY_{:02.0f}".format(key_number)
+        value = key_value.replace("KC_", "")
 
-    return fmt
+        if truncate and (len(value) > len(place_holder)):
+            if verbose:
+                print("truncating key #{}: {}->{}".format(key_number, value,
+                                                          value[:len(place_holder)]))
+
+            value = value[:len(place_holder)].center(len(place_holder))
+        else:
+            value = value.center(len(place_holder))
+
+        template = template.replace(place_holder, value)
+
+    return template
+
+
+def fill_source_template(template, layer_name, layer_definition,
+                         verbose=False):
+    """
+    Replace placeholders in format string with appropriate key names
+
+    :param template: str
+        template for comment "picture" of layer
+
+    :param layer_name: str
+        name for this layer
+
+    :param layer_definition: dict
+        mapping of key number of key value
+
+    :param verbose: bool
+
+    :return: str
+        template with appropriate values filled in for place holders
+
+    """
+
+    template = template.replace("$LAYER_NAME", layer_name)
+
+    for key_number, key_value in layer_definition.items():
+        place_holder = "$KEY_{:02.0f}".format(key_number)
+        value = key_value + ","
+
+        fill_length = len(place_holder) + 6
+        value = value.ljust(fill_length)
+
+        template = template.replace(place_holder, value)
+
+    return template
