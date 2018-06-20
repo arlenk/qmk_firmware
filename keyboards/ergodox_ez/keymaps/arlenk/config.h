@@ -1,7 +1,7 @@
 #ifndef CONFIG_ARLENK_H
 #define CONFIG_ARLENK_H
 
-// standard ergodox heard
+// standard ergodox header
 #include "../../config.h"
 
 #undef TAPPING_TERM
