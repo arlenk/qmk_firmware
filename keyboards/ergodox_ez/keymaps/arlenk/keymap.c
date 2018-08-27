@@ -14,13 +14,15 @@ enum custom_keycodes {
 
 //Tap Dance Declarations
 enum {
-  TD_QUOTE_GRAVE = 0
+  TD_QUOTE_GRAVE = 0,
+  TD_I_ARROW_LAYER
 };
 
 //Tap Dance Definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
   // Tap once for ', twice for `
-  [TD_QUOTE_GRAVE]  = ACTION_TAP_DANCE_DOUBLE(KC_QUOTE, KC_GRAVE)
+  [TD_QUOTE_GRAVE]  = ACTION_TAP_DANCE_DOUBLE(KC_QUOTE, KC_GRAVE),
+  [TD_I_ARROW_LAYER] = ACTION_TAP_DANCE_DUAL_ROLE(KC_I, 3)
 // Other declarations would go here, separated by commas, if you have them
 };
 
@@ -39,11 +41,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                                 CTL_T(KC_SPACE),   KC_BSPACE,         LT(3,KC_END),
 
       // right hand
-      KC_RIGHT,          KC_6,              KC_7,              KC_8,              KC_9,              KC_0,              KC_MINUS,
-      TG(1),             KC_Y,              KC_U,              KC_I,              KC_O,              KC_P,              KC_BSLASH,
-                         KC_H,              KC_J,              KC_K,              KC_L,              LT(2,KC_SCOLON),   GUI_T(KC_QUOTE),
-      TT(3),             KC_N,              KC_M,              KC_COMMA,          KC_DOT,            RCTL_T(KC_SLASH),  KC_RSHIFT,
-      KC_UP,             KC_DOWN,           KC_LBRACKET,       KC_RBRACKET,       MO(1),
+      KC_RIGHT,          KC_6,              KC_7,              KC_8,                 KC_9,            KC_0,              KC_MINUS,
+      TG(1),             KC_Y,              KC_U,              TD(TD_I_ARROW_LAYER), KC_O,            KC_P,              KC_BSLASH,
+                         KC_H,              KC_J,              KC_K,                 KC_L,            LT(2,KC_SCOLON),   GUI_T(KC_QUOTE),
+      TT(3),             KC_N,              KC_M,              KC_COMMA,             KC_DOT,          RCTL_T(KC_SLASH),  KC_RSHIFT,
+      KC_UP,             KC_DOWN,           KC_LBRACKET,       KC_RBRACKET,          MO(1),
 
       KC_LALT,           CTL_T(KC_ESCAPE),
       KC_PGUP,
