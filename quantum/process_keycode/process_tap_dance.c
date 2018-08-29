@@ -15,6 +15,7 @@
  */
 #include "quantum.h"
 #include "action_tapping.h"
+#include "print.h"
 
 #ifndef NO_ACTION_ONESHOT
 uint8_t get_oneshot_mods(void);
@@ -25,6 +26,7 @@ static int8_t highest_td = -1;
 
 void qk_tap_dance_pair_on_each_tap (qk_tap_dance_state_t *state, void *user_data) {
   qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+  dprintf("qk_tap_dance_pair_on_each_tap: state->count=%d\n", state->count);
 
   if (state->count == 2) {
     register_code16 (pair->kc2);
@@ -34,6 +36,7 @@ void qk_tap_dance_pair_on_each_tap (qk_tap_dance_state_t *state, void *user_data
 
 void qk_tap_dance_pair_finished (qk_tap_dance_state_t *state, void *user_data) {
   qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
 
   if (state->count == 1) {
     register_code16 (pair->kc1);
@@ -54,8 +57,10 @@ void qk_tap_dance_pair_reset (qk_tap_dance_state_t *state, void *user_data) {
 
 void qk_tap_dance_dual_role_on_each_tap (qk_tap_dance_state_t *state, void *user_data) {
   qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
+  dprintf("qk_tap_dance_dual_role_on_each_tap: state->count=%d [keycode=%d]\n", state->count, pair->kc);
 
   if (state->count == 2) {
+    //dprintf("  unregister_code16(%d)\n", pair->kc);
     layer_move (pair->layer);
     state->finished = true;
   }
@@ -63,6 +68,7 @@ void qk_tap_dance_dual_role_on_each_tap (qk_tap_dance_state_t *state, void *user
 
 void qk_tap_dance_dual_role_finished (qk_tap_dance_state_t *state, void *user_data) {
   qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
+  dprintf("qk_tap_dance_dual_role_finished: state->count=%d\n", state->count);
 
   if (state->count == 1) {
     register_code16 (pair->kc);
@@ -73,6 +79,7 @@ void qk_tap_dance_dual_role_finished (qk_tap_dance_state_t *state, void *user_da
 
 void qk_tap_dance_dual_role_reset (qk_tap_dance_state_t *state, void *user_data) {
   qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
+  dprintf("qk_tap_dance_dual_role_reset: state->count=%d\n", state->count);
 
   if (state->count == 1) {
     unregister_code16 (pair->kc);
@@ -97,6 +104,7 @@ static inline void process_tap_dance_action_on_dance_finished (qk_tap_dance_acti
 {
   if (action->state.finished)
     return;
+  dprintf("process_tap_dance_action_on_dance_finished: state->finished=%d\n", action->state.finished);
   action->state.finished = true;
   add_mods(action->state.oneshot_mods);
   add_weak_mods(action->state.weak_mods);
@@ -106,6 +114,7 @@ static inline void process_tap_dance_action_on_dance_finished (qk_tap_dance_acti
 
 static inline void process_tap_dance_action_on_reset (qk_tap_dance_action_t *action)
 {
+  dprintf("process_tap_dance_action_on_dance_reset: state->finished=%d\n", action->state.finished);
   _process_tap_dance_action_fn (&action->state, action->user_data, action->fn.on_reset);
   del_mods(action->state.oneshot_mods);
   del_weak_mods(action->state.weak_mods);
@@ -114,6 +123,7 @@ static inline void process_tap_dance_action_on_reset (qk_tap_dance_action_t *act
 
 void preprocess_tap_dance(uint16_t keycode, keyrecord_t *record) {
   qk_tap_dance_action_t *action;
+  dprintf("preprocess_tap_dance: keycode=%d\n", keycode);
 
   if (!record->event.pressed)
     return;
@@ -124,9 +134,12 @@ void preprocess_tap_dance(uint16_t keycode, keyrecord_t *record) {
   for (int i = 0; i <= highest_td; i++) {
     action = &tap_dance_actions[i];
     if (action->state.count) {
-      if (keycode == action->state.keycode && keycode == last_td)
+      if (keycode == action->state.keycode && keycode == last_td) {
+        dprintf("  continuing tap dance for action %d\n", i);
         continue;
+      }
       action->state.interrupted = true;
+      dprintf("  finishing tap dance for action %d\n", i);
       process_tap_dance_action_on_dance_finished (action);
       reset_tap_dance (&action->state);
     }
@@ -136,6 +149,7 @@ void preprocess_tap_dance(uint16_t keycode, keyrecord_t *record) {
 bool process_tap_dance(uint16_t keycode, keyrecord_t *record) {
   uint16_t idx = keycode - QK_TAP_DANCE;
   qk_tap_dance_action_t *action;
+  dprintf("process_tap_dance: index=%d, keycode=%d, pressed=%d\n", idx, keycode, record->event.pressed);
 
   switch(keycode) {
   case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
@@ -159,7 +173,10 @@ bool process_tap_dance(uint16_t keycode, keyrecord_t *record) {
 
       last_td = keycode;
     } else {
+      dprintf("  checking if we should reset dance (action=%d, count=%d, state=%d)\n", idx, action->state.count,
+              action->state.finished);
       if (action->state.count && action->state.finished) {
+        dprintf("  about to reset dance (action %d)\n", idx);
         reset_tap_dance (&action->state);
       }
     }
@@ -167,6 +184,12 @@ bool process_tap_dance(uint16_t keycode, keyrecord_t *record) {
     break;
   }
 
+  if ((keycode == 82) && (!record->event.pressed)) {
+    action = &tap_dance_actions[1];
+    dprintf("**** forcing reset of action 1 [state.pressed=%d]\n", action->state.pressed);
+    action->state.pressed = 0;
+    reset_tap_dance(&action->state);
+  }
   return true;
 }
 
@@ -197,7 +220,7 @@ void reset_tap_dance (qk_tap_dance_state_t *state) {
 
   if (state->pressed)
     return;
-
+  dprintf("reset_tap_dance: keycode=%d, pressed=%d\n", state->keycode, state->pressed);
   action = &tap_dance_actions[state->keycode - QK_TAP_DANCE];
 
   process_tap_dance_action_on_reset (action);

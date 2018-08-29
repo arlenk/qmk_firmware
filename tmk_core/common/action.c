@@ -171,6 +171,8 @@ void process_record_tap_hint(keyrecord_t *record)
  */
 void process_record(keyrecord_t *record)
 {
+    dprintf("\nproces_record: key=%d, pressed=%d", record->event.key, record->event.pressed);
+
     if (IS_NOEVENT(record->event)) { return; }
 
     if(!process_record_quantum(record))

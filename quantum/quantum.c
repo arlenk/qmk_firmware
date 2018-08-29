@@ -129,6 +129,7 @@ void unregister_code16 (uint16_t code) {
 
 __attribute__ ((weak))
 bool process_action_kb(keyrecord_t *record) {
+  dprintf("process_action_kb: pressed=%d [key=%d]\n", record->event.pressed, record->event.key);
   return true;
 }
 
@@ -191,6 +192,7 @@ static uint16_t scs_timer[2] = {0, 0};
 static bool grave_esc_was_shifted = false;
 
 bool process_record_quantum(keyrecord_t *record) {
+  dprintf("\nproces_record_quantum: key=%d, pressed=%d\n", record->event.key, record->event.pressed);
 
   /* This gets the keycode from the key pressed */
   keypos_t key = record->event.key;
