@@ -38,7 +38,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
                                                                           ALT_T(KC_APPLICATION),      KC_LGUI,
                                                                                                       KC_HOME,
-                                                                KC_BSPACE,         CTL_T(KC_SPACE),   LT(3,KC_END),
+                                                                CTL_T(KC_SPACE),   KC_BSPACE,         LT(3,KC_END),
 
       // right hand
       KC_RIGHT,          KC_6,              KC_7,              KC_8,                 KC_9,            KC_0,              KC_MINUS,
