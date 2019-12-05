@@ -2,6 +2,7 @@
 #include "debug.h"
 #include "action_layer.h"
 #include "version.h"
+#include <print.h>
 
 
 enum custom_keycodes {
@@ -133,6 +134,8 @@ uint32_t layer_state_set_user(uint32_t state) {
     ergodox_right_led_1_off();
     ergodox_right_led_2_off();
     ergodox_right_led_3_off();
+
+    uprintf("QMK|LAYER_CHANGE|%d\n", layer);
     switch (layer) {
       case 0:
         #ifdef RGBLIGHT_COLOR_LAYER_0

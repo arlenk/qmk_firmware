@@ -10,4 +10,9 @@
 #undef TAPPING_TOGGLE
 #define TAPPING_TOGGLE 1
 
+// when CONSOLE_ENABLE=yes... firmware is too big
+// this will reduce the size a bit
+#define NO_DEBUG
+#define USER_PRINT
+
 #endif
