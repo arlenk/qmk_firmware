@@ -17,22 +17,36 @@ enum {
   TD_QUOTE_GRAVE = 0,
   TD_I_ARROW_LAYER,
   TD_X_CTRLX,
+  TD_EQ_NOTEQ,
 };
 
 //Tap Dance Definitions
+
+
+void td_equals_not_equals (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    SEND_STRING(SS_TAP(X_EQUAL));
+    reset_tap_dance (state);
+  } else if (state->count == 2) {
+    SEND_STRING ("==");
+  } else if (state->count == 3) {
+    SEND_STRING ("!=");
+  }
+}
+
 qk_tap_dance_action_t tap_dance_actions[] = {
   // Tap once for ', twice for `
   [TD_QUOTE_GRAVE]  = ACTION_TAP_DANCE_DOUBLE(KC_QUOTE, KC_GRAVE),
   [TD_I_ARROW_LAYER] = ACTION_TAP_DANCE_DUAL_ROLE(KC_I, 3),
-  [TD_X_CTRLX]  = ACTION_TAP_DANCE_DOUBLE(KC_X, LCTL(KC_X))
+  [TD_X_CTRLX]  = ACTION_TAP_DANCE_DOUBLE(KC_X, LCTL(KC_X)),
+  [TD_EQ_NOTEQ] = ACTION_TAP_DANCE_FN(td_equals_not_equals)
 // Other declarations would go here, separated by commas, if you have them
 };
-
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_ergodox(
       // left hand
-      KC_EQUAL,          KC_1,               KC_2,              KC_3,              KC_4,              KC_5,              KC_LEFT,
+      TD(TD_EQ_NOTEQ),   KC_1,               KC_2,              KC_3,              KC_4,              KC_5,              KC_LEFT,
       KC_TAB,            KC_Q,               KC_W,              KC_E,              KC_R,              KC_T,              TG(1),
       CTL_T(KC_BSPACE),  LT(1,KC_A),         KC_S,              KC_D,              KC_F,              KC_G,
       OSM(MOD_LSFT),     LT(1,KC_Z),         TD(TD_X_CTRLX),    KC_C,              LT(3, KC_V),       KC_B,              TT(3),
