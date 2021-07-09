@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Jacob Jerrell jacob.jerrell@gmail.com @JacobJerrell
+Copyright 2020 Jacob Jerrell <jacob.jerrell@gmail.com> @JacobJerrell
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,233 +14,162 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include QMK_KEYBOARD_H
+
 #include "bocaj.h"
 
+/*
+ * The `LAYOUT_ergodox_pretty_base` macro is a template to allow the use of
+ * identical modifiers for the default layouts (eg QWERTY, Colemak, Dvorak,
+ * etc), so that there is no need to set them up for each layout, and modify
+ * all of them if I want to change them.  This helps to keep consistency and
+ * ease of use. K## is a placeholder to pass through the individual keycodes
+ */
+#define LAYOUT_ergodox_bocaj(...)       WRAPPER_ergodox_bocaj(__VA_ARGS__)
+#define LAYOUT_ergodox_bocaj_WIN(...)   WRAPPER_ergodox_bocaj_WIN(__VA_ARGS__)
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  /* Hardware Workman - http://www.keyboard-layout-editor.com/#/gists/7a07cb982ec3597ba3e3d947554225f1
-            .---------------------------------------------.                                              .---------------------------------------------.
-            |  ESC  |  1  |  2  |  3  |  4  |  5  |   ->  |                                              !   -   |  6  |  7  |  8  |  9  |  0  |   =   |
-            !-------+-----+-----+-----+-----+-------------!                                              !-------+-----+-----+-----+-----+-----+-------!
-            |  DEL  |  Q  |  D  |  R  |  W  |  B  |   (   |                                              !   )   |  J  |  F  |  U  |  P  |  ;  |   \   |
-            !-------+-----+-----+-----x-----x-----!       !                                              !       !-----x-----x-----+-----+-----+-------!
-            |  NUMS |  A  |  S  |  H  |  T  |  G  |-------!                                              !-------!  Y  |  N  |  E  |  O  |  I  |   '   |
-            !-------+-----+-----+-----x-----x-----!  HYP  !                                              !  MEH  !-----x-----x-----+-----+-----+-------!
-            | SHIFT |  Z  |  X  |  M  |  C  |  V  |   [   |                                              !   ]   |  K  |  L  |  ,  |  .  |  /  | SHIFT |
-            '-------+-----+-----+-----+-----+-------------'                                              '-------------+-----+-----+-----+-----+-------'
-             | GAME | NUM | LWR |  UP | LFT | .---------------.                                      .---------------. ! RGT | DWN |     |     | ADJ  |
-             '------------------------------' |   APP | HOME  |                                      !  PGUP |  ESC  | '------------------------------'
-                                      .-------+-------+-------!                                      !-------+-------+-------.
-                                      !       !       |  END  |                                      !  PGDN |       ! ENTER !
-                                      ! SPACE ! BSPCE !-------!                                      !-------!  TAB  !   /   !
-                                      |       |       | COPY  |                                      ! PASTE |       | LOWER |
-                                      '-----------------------'                                      '-----------------------'
-*/
-  [_HWRKMN] = LAYOUT_ergodox_pretty_wrapper(
-    KC_ESC, _______________________NUMBER_LEFT_______________________, JJ_ARRW,   KC_MINUS,_______________________NUMBER_RIGHT______________________, KC_EQUAL,
-    KC_DEL, _______________________HWORKMAN_L1_______________________, KC_LPRN,   KC_RPRN, _______________________HWORKMAN_R1_______________________, KC_BSLS,
-    KC_NUMS,_______________________HWORKMAN_L2_______________________,                     _______________________HWORKMAN_R2_______________________, KC_QUOTE,
-    KC_LSFT,_______________________HWORKMAN_L3_______________________, HYP_LBK,   MEH_RBK, _______________________HWORKMAN_R3_______________________, KC_RSFT,
-      ___________________ERGODOX_BOTTOM_LEFT___________________,                                  ___________________ERGODOX_BOTTOM_RIGHT__________________,
-                                                   ______________________ERGODOX_THUMBS_____________________
-  ),
-/* Software Workman / QWERTY - http://www.keyboard-layout-editor.com/#/gists/b6c016a22a9d31381a276a603a42fe5f
-            .---------------------------------------------.                                              .---------------------------------------------.
-            |  ESC  |  1  |  2  |  3  |  4  |  5  |   ->  |                                              !   -   |  6  |  7  |  8  |  9  |  0  |   =   |
-            !-------+-----+-----+-----+-----+-------------!                                              !-------+-----+-----+-----+-----+-----+-------!
-            |  DEL  |  Q  |  W  |  E  |  R  |  T  |   (   |                                              !   )   |  Y  |  U  |  I  |  O  |  P  |   \   |
-            !-------+-----+-----+-----x-----x-----!       !                                              !       !-----x-----x-----+-----+-----+-------!
-            |  NUMS |  A  |  S  |  D  |  F  |  G  |-------!                                              !-------!  H  |  J  |  K  |  L  |  ;  |   '   |
-            !-------+-----+-----+-----x-----x-----!  HYP  !                                              !  MEH  !-----x-----x-----+-----+-----+-------!
-            | SHIFT |  Z  |  X  |  C  |  V  |  B  |   [   |                                              !   ]   |  N  |  M  |  ,  |  .  |  /  | SHIFT |
-            '-------+-----+-----+-----+-----+-------------'                                              '-------------+-----+-----+-----+-----+-------'
-             | GAME | NUM | LWR |  UP | LFT | .---------------.                                      .---------------. ! RGT | DWN |     |     | ADJ  |
-             '------------------------------' |   APP | HOME  |                                      !  PGUP |  ESC  | '------------------------------'
-                                      .-------+-------+-------!                                      !-------+-------+-------.
-                                      !       !       |  END  |                                      !  PGDN |       ! ENTER !
-                                      ! SPACE ! BSPCE !-------!                                      !-------!  TAB  !   /   !
-                                      |       |       | COPY  |                                      ! PASTE |       | LOWER |
-                                      '-----------------------'                                      '-----------------------'
-*/
-  [_SWRKMN] = LAYOUT_ergodox_pretty_wrapper(
-    KC_ESC, _______________________NUMBER_LEFT_______________________, JJ_ARRW,   KC_MINUS,_______________________NUMBER_RIGHT______________________, KC_EQUAL,
-    KC_DEL, _______________________SWORKMAN_L1_______________________, KC_LPRN,   KC_RPRN, _______________________SWORKMAN_R1_______________________, KC_BSLS,
-    KC_NUMS,_______________________SWORKMAN_L2_______________________,                     _______________________SWORKMAN_R2_______________________, KC_QUOTE,
-    KC_LSFT,_______________________SWORKMAN_L3_______________________, HYP_LBK,   MEH_RBK, _______________________SWORKMAN_R3_______________________, KC_RSFT,
-      ___________________ERGODOX_BOTTOM_LEFT___________________,                                  ___________________ERGODOX_BOTTOM_RIGHT__________________,
-                                                   ______________________ERGODOX_THUMBS_____________________
-  ),
-/* Lower - http://www.keyboard-layout-editor.com/#/gists/f1d745a88d1c48ab55e095efd9e7a43a
-            .---------------------------------------------.                                              .---------------------------------------------.
-            |  ESC  |     |     |     |     |     |   ->  |                                              !   -   |     |     |     |     |     |   =   |
-            !-------+-----+-----+-----+-----+-------------!                                              !-------+-----+-----+-----+-----+-----+-------!
-            |  DEL  |  !  |  @  |  #  |  $  |  %  |   (   |                                              !   )   |  ^  |  &  |  *  |  (  |  )  |   \   |
-            !-------+-----+-----+-----x-----x-----!       !                                              !       !-----x-----x-----+-----+-----+-------!
-            |   `   |  1  |  2  |  3  |  4  |  5  |-------!                                              !-------!   6 |  7  |  8  |  9  |  0  |   '   |
-            !-------+-----+-----+-----x-----x-----!  HYP  !                                              !  MEH  !-----x-----x-----+-----+-----+-------!
-            | SHIFT |     |     |     |     |     |   [   |                                              !   ]   |     |     |     |     |     | SHIFT |
-            '-------+-----+-----+-----+-----+-------------'                                              '-------------+-----+-----+-----+-----+-------'
-             | GAME | NUM | LWR |  UP | LFT | .---------------.                                      .---------------. ! RGT | DWN |     |     | ADJ  |
-             '------------------------------' |   APP | HOME  |                                      !  PGUP |  ESC  | '------------------------------'
-                                      .-------+-------+-------!                                      !-------+-------+-------.
-                                      !       !       |  END  |                                      !  PGDN |       ! ENTER !
-                                      ! SPACE ! BSPCE !-------!                                      !-------!  TAB  !   /   !
-                                      |       |       | COPY  |                                      ! PASTE |       | LOWER |
-                                      '-----------------------'                                      '-----------------------'
-*/
-  [_LOWER] = LAYOUT_ergodox_pretty_wrapper(
-    _______,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, _______,    _______, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, _______,
-    _______,_______________________SPECIAL_LEFT______________________, _______,    _______, _______________________SPECIAL_RIGHT_____________________, _______,
-    KC_GRV ,_______________________NUMBER_LEFT_______________________,                      _______________________NUMBER_RIGHT______________________, _______,
-    _______,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, _______,    _______, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, _______,
-    _________________________________________________________,                                       _________________________________________________________,
-                                                      ______________________ERGODOX_THUMBS_____________________
-  ),
-  /* Adjust - http://www.keyboard-layout-editor.com/#/gists/dedeae17b35a5d5f745a42aaea78f007
-            .---------------------------------------------.                                              .---------------------------------------------.
-            |       |     |     |     |     |     | EPRM  |                                              !  EPRM |     |     |     |     |     |       |
-            !-------+-----+-----+-----+-----+-------------!                                              !-------+-----+-----+-----+-----+-----+-------!
-            |       |     |     |     |     |     |       |                                              !       |     |     |     |     |     |       |
-            !-------+-----+-----+-----x-----x-----!       !                                              !       !-----x-----x-----+-----+-----+-------!
-            |       | 🔇  |  🔉  | 🔊  | LCK |     |-------!                                              !-------!     |     |     |     |     | SWRKM |
-            !-------+-----+-----+-----x-----x-----!       !                                              !       !-----x-----x-----+-----+-----+-------!
-            |       |     |     |     |     |     |       |                                              !       |     |     |     |     |     | HWRKM |
-            '-------+-----+-----+-----+-----+-------------'                                              '-------------+-----+-----+-----+-----+-------'
-             |      |     |     |     |     | .---------------.                                      .---------------. !     |     |     |     |      |
-             '------------------------------' |       |       |                                      !       |       | '------------------------------'
-                                      .-------+-------+-------!                                      !-------+-------+-------.
-                                      !       !       |       |                                      !       |       !       !
-                                      !       !       !-------!                                      !-------!       !       !
-                                      |       |       |       |                                      !       |       |       |
-                                      '-----------------------'                                      '-----------------------'
-*/
-  [_ADJUST] = LAYOUT_ergodox_pretty_wrapper(
-    XXXXXXX,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, KC_EPRM,    KC_EPRM, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,
-    XXXXXXX,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, XXXXXXX,
-    XXXXXXX,KC__MUTE,  KC__VOLDOWN,   KC__VOLUP,   MC_LOCK,   XXXXXXX,                       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, KC_SWRK,
-    XXXXXXX,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, KC_HWRK,
-    XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,                                                             XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, _______,
-                                                     ______________________ERGODOX_THUMBS_____________________
-  ),
-  [_NUMS] = LAYOUT_ergodox_pretty_wrapper(
-    XXXXXXX,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,
-    XXXXXXX,XXXXXXX,  XXXXXXX,   KC_UP,     XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,  XXXXXXX,    KC_KP_7,    KC_KP_8,    KC_KP_9,     KC_PAST, XXXXXXX,
-    _______,XXXXXXX,  KC_LEFT,   KC_DOWN,   KC_RIGHT,   XXXXXXX,                             XXXXXXX,    KC_KP_4,    KC_KP_5,    KC_KP_6,     KC_PPLS, XXXXXXX,
-    LM_SHFT,XXXXXXX,  XXXXXXX,   XXXXXXX,   JJ_COPY,   JJ_PSTE,        XXXXXXX,    XXXXXXX,  XXXXXXX,    KC_KP_1,    KC_KP_2,    KC_KP_3,     KC_PMNS, XXXXXXX,
-    XXXXXXX,_______,XXXXXXX,XXXXXXX,XXXXXXX,                                                             KC_KP_0,    KC_PDOT,    KC_COMM,     KC_PEQL, XXXXXXX,
-                                                              _______, _______,    _______,_______,
-                                                                       _______,    _______,
-                                                       KC_LALT,KC_LGUI,_______,    _______,_______,_______
-  ),
-  [_NMOD] = LAYOUT_ergodox_pretty_wrapper(
-    XXXXXXX,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,
-    XXXXXXX,XXXXXXX,  XXXXXXX,   _______,   XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,  XXXXXXX,    _______,    _______,    _______,     _______, XXXXXXX,
-    XXXXXXX,XXXXXXX,  _______,   _______,   _______,    XXXXXXX,                             XXXXXXX,    _______,    _______,    _______,     _______, XXXXXXX,
-    LM_SHFT,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, XXXXXXX,    XXXXXXX,  XXXXXXX,    _______,    _______,    _______,     _______, XXXXXXX,
-    XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,XXXXXXX,                                                             _______,    _______,    _______,     _______, XXXXXXX,
-                                                              XXXXXXX, XXXXXXX,    XXXXXXX,XXXXXXX,
-                                                                       XXXXXXX,    XXXXXXX,
-                                                       KC_LALT,KC_LGUI,XXXXXXX,    XXXXXXX,XXXXXXX,XXXXXXX
-  ),
-// Diablo - http://www.keyboard-layout-editor.com/#/gists/28476e4237e77d4835ac8a9d7e5f9b2c
-  [_DIABLO] = LAYOUT_ergodox_pretty_wrapper(
-    KC_ESC , XXXXXXX  , XXXXXXX   ,XXXXXXX   ,XXXXXXX   ,XXXXXXX   ,XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, XXXXXXX,
-    KC_TAB , KC_Q     ,ALT_T(KC_S), KC_I     , KC_F     , KC_J     ,KC_MINS,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, XXXXXXX,
-    KC_LOCK, KC_1     , KC_2      , KC_3     , KC_4     ,KC_DCLR   ,                      XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, XXXXXXX,
-    KC_LSFT, KC_D3_1  , KC_D3_2   , KC_D3_3  , KC_D3_4  , KC_T     ,KC_MINS,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, XXXXXXX,
-    _______, XXXXXXX  , XXXXXXX   , XXXXXXX  , KC_M     ,                                             XXXXXXX,    XXXXXXX,    XXXXXXX,     XXXXXXX, XXXXXXX,
-                                                              XXXXXXX, XXXXXXX,    XXXXXXX,XXXXXXX,
-                                                                       XXXXXXX,    XXXXXXX,
-                                                      KC_BTN1,KC_BTN2,KC_ENTER,    XXXXXXX,XXXXXXX,XXXXXXX
-  )
+
+    [_WORKMAN] = LAYOUT_ergodox_bocaj(
+        KC_ESC, ________________NUMBER_LEFT________________, KC_ARRW,     KC_MINS, ________________NUMBER_RIGHT_______________, KC_EQUAL,
+        KC_DEL, _________________WORKMAN_L1________________, KC_LPRN,     KC_RPRN, _________________WORKMAN_R1________________, KC_BSLS,
+       _______, _________________WORKMAN_L2________________,                       _________________WORKMAN_R2________________, KC_QUOT,
+       KC_LSFT, _________________WORKMAN_L3________________, KC_LBRC,     KC_RBRC, _________________WORKMAN_R3________________, _______,
+        MO_MOD, KC_PGUP, KC_HOME, KC_UP, KC_LEFT,                                          KC_RIGHT, KC_DOWN, KC_END, KC_PGDN, WORKMAN,
+                                              KC_APP,KC_HOME, /* <- LHS/RHS -> */ KC_END,KC_ESC,
+                                                     KC_PGUP, /* <- LHS/RHS -> */ KC_PGDN,
+                                  KC_SPACE,KC_BSPACE,KC_LEAD, /* <- LHS/RHS -> */ KC_LOCK,KC_TAB,KC_ENTER
+    ),
+
+    [_WWORKMAN] = LAYOUT_ergodox_bocaj_WIN(
+        KC_ESC, ________________NUMBER_LEFT________________, KC_ARRW,     KC_MINS, ________________NUMBER_RIGHT_______________, KC_EQUAL,
+        KC_DEL, _________________WORKMAN_L1________________, KC_LPRN,     KC_RPRN, _________________WORKMAN_R1________________, KC_BSLS,
+       _______, _________________WORKMAN_L2________________,                       _________________WORKMAN_R2________________, KC_QUOT,
+       KC_LSFT, _________________WORKMAN_L3________________, KC_LBRC,     KC_RBRC, _________________WORKMAN_R3________________, _______,
+        MO_MOD, KC_PGUP, KC_HOME, KC_UP, KC_LEFT,                                          KC_RIGHT, KC_DOWN, KC_END, KC_PGDN, WORKMAN,
+                                              KC_APP,KC_HOME, /* <- LHS/RHS -> */ KC_END,KC_ESC,
+                                                     KC_PGUP, /* <- LHS/RHS -> */ KC_PGDN,
+                                  KC_SPACE,KC_BSPACE,KC_LEAD, /* <- LHS/RHS -> */ KC_LOCK,KC_TAB,KC_ENTER
+    ),
+
+    [_LOWER] = LAYOUT_ergodox_bocaj(
+        KC_GRV, _______, _______, _______, _______,  _______, _______,     _______, _______, _______, _______, _______, _______, _______,
+       _______, _______, _______, KC_UP,   _______,  _______, _______,     _______, _______, KC_7,    KC_8,    KC_9,    KC_BSLS, _______,
+       _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, _______,                       _______, KC_4,    KC_5,    KC_6,    KC_ASTR, _______,
+       _______, _______, _______, _______, _______,  _______, _______,     _______, _______, KC_1,    KC_2,    KC_3,    KC_PLUS, _______,
+       _______, _______, _______, _______,  _______,                                         KC_0,    KC_DOT,  KC_COMM, KC_MINS, _______,
+                                               KC_APP,KC_HOME, /* <- LHS/RHS -> */ KC_END,KC_ESC,
+                                                      KC_PGUP, /* <- LHS/RHS -> */ KC_PGDN,
+                                   KC_SPACE,KC_BSPACE,KC_LEAD, /* <- LHS/RHS -> */ KC_LOCK,KC_TAB,KC_ENTER
+    ),
+
+    [_RAISE] = LAYOUT_ergodox_bocaj(
+        KC_TILD, _________________RAISE_L1__________________, _______,         _______, _________________RAISE_R1__________________, _______,
+         KC_F11, _________________RAISE_L2__________________, _______,         _______, _________________RAISE_R2__________________, KC_F12,
+        _______, _________________RAISE_L3__________________,                           _________________RAISE_R3__________________, _______,
+        _______, _______, KC_MRWD, KC_MPLY, KC_MFFD, _______, _______,         _______, ___________________BLANK___________________, _______,
+        ___________________BLANK___________________,                                             ___________________BLANK___________________,
+                                                 KC_APP,KC_HOME, /* <- LHS/RHS -> */ KC_END,KC_ESC,
+                                                        KC_PGUP, /* <- LHS/RHS -> */ KC_PGDN,
+                                     KC_SPACE,KC_BSPACE,KC_LEAD, /* <- LHS/RHS -> */ KC_LOCK,KC_TAB,KC_ENTER
+    ),
+
+    [_ADJUST] = LAYOUT_ergodox_pretty(
+        KC_MAKE, _______,  _______,     _______,   _______, _______, _______,       _______, _______, _______, _______, _______, _______, KC_RST,
+        VRSN,    _______,  _______,     _______,   _______, _______, _______,       _______, _______, _______, _______, _______, _______, EEP_RST,
+        _______, KC__MUTE, KC__VOLDOWN, KC__VOLUP, _______, KC_MNXT,                         _______, _______, _______, _______, _______, _______,
+        _______, _______,  _______,     _______,   _______, _______, _______,       _______, _______, _______, _______, _______, _______, _______,
+        _______, _______,  _______,     _______,   _______,                                           _______, _______, _______, _______, _______,
+                                              KC_APP,KC_HOME, /* <- LHS/RHS -> */ KC_END,KC_ESC,
+                                                     KC_PGUP, /* <- LHS/RHS -> */ KC_PGDN,
+                                  KC_SPACE,KC_BSPACE,KC_LEAD, /* <- LHS/RHS -> */ KC_LOCK,KC_TAB,KC_ENTER
+    ),
+
+    // Wrapping Mouse-Wheel Keys with `X_T()` style functions seems
+    // to break the mouse button. So we can't use the wrapper here.
+    [_MOD] = LAYOUT_ergodox_pretty(
+        _______, _______, _______, _______, _______, _______, _______,           _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, KC_WH_D, _______, _______, _______,           _______, _______, _______, KC_MS_U, _______, _______, _______,
+        _______, _______, KC_WH_L, KC_WH_U, KC_WH_R, _______,                             _______, KC_MS_L, KC_MS_D, KC_MS_R, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______,           _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, KC_ACL0,                                               KC_ACL1, KC_ACL2, _______, _______, _______,
+                                                 _______,_______, /* <- LHS/RHS -> */ _______,_______,
+                                                         _______, /* <- LHS/RHS -> */ _______,
+                                         KC_BTN1,KC_BTN2,_______, /* <- LHS/RHS -> */ _______,KC_BTN3,KC_BTN4
+    )
+
 };
+// clang-format on
 
 bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
-  uint8_t default_layer = 0;
-  default_layer = eeconfig_read_default_layer();
-  switch (keycode) {
-    case KC_SWRK:
-      if (!record->event.pressed) {
-        set_single_persistent_default_layer(_SWRKMN);
-        layer_move(default_layer);
-        ergodox_blink_all_leds();
-        ergodox_blink_all_leds();
-      }
-      return false;
-      break;
-    case KC_HWRK:
-      if (!record->event.pressed) {
-        set_single_persistent_default_layer(_HWRKMN);
-        layer_move(default_layer);
-        ergodox_blink_all_leds();
-        ergodox_blink_all_leds();
-      }
-      return false;
-      break;
-    case KC_EPRM:
-      if (!record->event.pressed) {
-        ergodox_blink_all_leds();
-        eeconfig_init();
-      }
-      return false;
-      break;
-    case MC_LOCK:
-      if (!record->event.pressed) {
-        layer_move(default_layer);
-        SEND_STRING(SS_LCTRL(SS_LGUI("q")));
-      }
-      return false;
-      break;
-  }
-  return true;
+    return true;
 }
 
 void matrix_init_keymap(void) {};
 
+// Runs whenever there is a layer state change.
+layer_state_t layer_state_set_keymap(layer_state_t state) {
+    ergodox_board_led_off();
+    ergodox_right_led_1_off();
+    ergodox_right_led_2_off();
+    ergodox_right_led_3_off();
+
+    uint8_t layer = get_highest_layer(state);
+    switch (layer) {
+        case _LOWER:
+            ergodox_right_led_3_on();
+            break;
+        case _MOD:
+            ergodox_right_led_2_on();
+            break;
+        case _RAISE:
+            ergodox_right_led_1_on();
+            break;
+        case _ADJUST:
+            ergodox_right_led_1_on();
+            ergodox_right_led_2_on();
+            break;
+        default:
+            break;
+    }
+
+    ergodox_right_led_1_set(25);
+    ergodox_right_led_2_set(25);
+    ergodox_right_led_3_set(25);
+
+    return state;
+};
+
 void matrix_scan_keymap(void) {
-  uint8_t layer = biton32(layer_state);
-  ergodox_board_led_off();
-  ergodox_right_led_1_off();
-  ergodox_right_led_2_off();
-  ergodox_right_led_3_off();
-  switch (layer) {
-  /*
-    Lights are treated as binary here for easy identification.
-    LED1 = 4; LED2 = 2; LED1 = 1
-    This allows for up to 8 identified layers (default layers being no lights on)
-    Which is way more than I should ever need
-  */
-    case _LOWER:
-      ergodox_right_led_3_on();
-      ergodox_right_led_3_set(10); // Default brightness is deadly in a dark room
-      break;
-    case _ADJUST:
-      ergodox_right_led_2_on();
-      ergodox_right_led_2_set(10);
-      break;
-    case _NUMS:
-      ergodox_right_led_2_on();
-      ergodox_right_led_2_set(10);
-      ergodox_right_led_3_on();
-      ergodox_right_led_3_set(10);
-      break;
-    case _NMOD:
-      ergodox_right_led_1_on();
-      ergodox_right_led_1_set(10);
-      ergodox_right_led_2_on();
-      ergodox_right_led_2_set(10);
-      ergodox_right_led_3_on();
-      ergodox_right_led_3_set(10);
-      break;
-    case _DIABLO:
-      ergodox_right_led_1_on();
-      ergodox_right_led_1_set(10);
-      break;
-    default:
-      // none
-      break;
-  }
-  /* #ifdef TAP_DANCE_ENABLE
-    run_diablo_macro_check();
-  #endif */
+    uint8_t modifiers = get_mods();
+    uint8_t led_usb_state = host_keyboard_leds();
+    uint8_t one_shot = get_oneshot_mods();
+    uint8_t layer_is_workman = layer_state_is(_WORKMAN);
+
+    if ((modifiers) && (layer_is_workman)) {
+        if (modifiers & MODS_SHIFT_MASK || led_usb_state & (1<<USB_LED_CAPS_LOCK) || one_shot & MODS_SHIFT_MASK) {
+            ergodox_right_led_1_on();
+            ergodox_right_led_1_set( 25 );
+        } else {
+            ergodox_right_led_1_off();
+        }
+        if ((modifiers & MODS_CTRL_MASK || one_shot & MODS_CTRL_MASK) && (modifiers & MODS_GUI_MASK || one_shot & MODS_GUI_MASK)) {
+            ergodox_right_led_2_on();
+            ergodox_right_led_2_set( 50 );
+        } else if ((modifiers & MODS_CTRL_MASK || one_shot & MODS_CTRL_MASK) || (modifiers & MODS_GUI_MASK || one_shot & MODS_GUI_MASK)) {
+            ergodox_right_led_2_on();
+            ergodox_right_led_2_set( 10 );
+        } else {
+            ergodox_right_led_2_off();
+        }
+        if (modifiers & MODS_ALT_MASK || one_shot & MODS_ALT_MASK) {
+            ergodox_right_led_3_on();
+            ergodox_right_led_3_set( 10 );
+        } else {
+            ergodox_right_led_3_off();
+        }
+    } else if (!(modifiers) && (layer_is_workman)) {
+        ergodox_right_led_1_off();
+        ergodox_right_led_2_off();
+        ergodox_right_led_3_off();
+    }
 };
